@@ -1,4 +1,6 @@
 const express = require("express");
+const parseCSV = require("../services/csvParser");
+const reconcile = require("../services/reconciliationService");
 
 const router = express.Router();
 
@@ -9,19 +11,39 @@ router.get("/report/:runId", (req, res) => {
     });
 });
 
-router.get("/report/:runId/summary", (req, res) => {
+router.get("/report/:runId/summary", async (req, res) => {
+
+    const userTxs =
+        await parseCSV("./uploads/user_transactions.csv");
+
+    const exchangeTxs =
+        await parseCSV("./uploads/exchange_transactions.csv");
+
+    const report =
+        reconcile(userTxs, exchangeTxs);
+
     res.json({
-        matched: 23,
-        conflicting: 0,
-        unmatchedUser: 3,
-        unmatchedExchange: 2
+        matched: report.matched.length,
+        conflicting: report.conflicting.length,
+        unmatchedUser: report.unmatchedUser.length,
+        unmatchedExchange: report.unmatchedExchange.length
     });
 });
 
-router.get("/report/:runId/unmatched", (req, res) => {
+router.get("/report/:runId/unmatched", async (req, res) => {
+
+    const userTxs =
+        await parseCSV("./uploads/user_transactions.csv");
+
+    const exchangeTxs =
+        await parseCSV("./uploads/exchange_transactions.csv");
+
+    const report =
+        reconcile(userTxs, exchangeTxs);
+
     res.json({
-        unmatchedUser: 3,
-        unmatchedExchange: 2
+        unmatchedUser: report.unmatchedUser,
+        unmatchedExchange: report.unmatchedExchange
     });
 });
 
