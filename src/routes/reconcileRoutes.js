@@ -2,10 +2,13 @@ const express = require("express");
 
 const router = express.Router();
 
-router.get("/reconcile", (req, res) => {
-    res.json({
-        message: "Reconciliation API Working"
-    });
-});
+const {
+    runReconciliation
+} = require("../controllers/reconcileController");
+
+router.get(
+    "/reconcile",
+    runReconciliation
+);
 
 module.exports = router;
